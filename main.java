@@ -13,34 +13,58 @@
  * 
  */
 
+import java.io.*;
+import java.util.*;
+
 class Simulator{
-    private String[] registers = new String[10]; //Store each string value with each index representing a register
-    private String[] memory = new String[10]; //Store memory strings values from .dat in memory spots
-    
-    private void setRegisters(String regValue){
-        for(int i = 0; i < registers.length; i++)
-        {
+    private static final int INSTRUCTION_MEMORY_SIZE = 1024;
+    private static final int DATA_MEMORY_SIZE = 1024;
 
+    private int[] registers = new int[32]; //Store each string value with each index representing a register
+    private int[] dataMemory = new int[DATA_MEMORY_SIZE]; //Store memory strings values from .dat in memory spots
+    private int[] instructionMemory = new int[INSTRUCTION_MEMORY_SIZE];
+
+    private int pc = 0;
+    private List<Integer> breakpoints = new ArrayList<>();
+    private boolean isRunning = false;
+
+    //load the instructions from the file
+    private void loader(String filePath){
+        try{
+            //use buffered reader to read in file contents
+            BufferedReader reader = new BufferedReader(new FileReader("filePathhere"));
+            String line;
+            int i = 0;
+            while((line = reader.readLine()) != null && i < INSTRUCTION_MEMORY_SIZE)
+            {
+                instructionMemory[i] = Integer.parseInt(line, 16);
+                i++;
+            }
+        }catch(IOException e){
+            e.printStackTrace();
         }
     }
-    private void setMemory(String memValue){
-        for(int i = 0; i < memory.length; i++)
-        {
 
-        }
+    private void setRegister(int registerIndex, int value){
+        if(registerIndex < 0 || registerIndex >= registers.length)
+            throw new IllegalArgumentException("Invalid Register Index");
+        registers[registerIndex] = value;
     }
-    private void setLoader(String loadValue){
-        
+    private void setMemory(int address, int value){
+        if(address < 0 || address >=dataMemory.length)
+            throw new IllegalArgumentException("Invalid Memory Index");
+        dataMemory[address] = value;
     }
 
-    String getRegister(){
-        return "";
+    private int getRegister(int registerIndex){
+        if(registerIndex < 0 || registerIndex >= registers.length)
+            throw new IllegalArgumentException("Invalid Memory Address");
+        return registers[registerIndex];
     }
-    String getMemory(){
-        return "";
-    }
-    String getLoader(){
-        return "";
+    private int getMemory(int address){
+        if(address < 0 || address >= dataMemory.length)
+            throw new IllegalArgumentException("Invalid Memory Address");
+        return dataMemory[address];
     }
 }
 public class main{
